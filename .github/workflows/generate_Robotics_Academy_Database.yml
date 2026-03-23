@@ -90,6 +90,11 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Debug Outputs for Bug Proof
+        run: |
+          echo "WRONG (github property): ${{ github.event.inputs.RI }}"
+          echo "RIGHT (passed value): ${{ inputs.RI }}"
+
       - name: Build and push RA database
         run: |
           cd scripts/RADI
