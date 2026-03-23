@@ -67,20 +67,16 @@ jobs:
     name: Run Test and Update Docker Image
     runs-on: ubuntu-latest
     env:
-      TAG: ${{ github.event.inputs.tag }}
+      TAG: ${{ inputs.tag }}
     steps:
       - name: Save the version tag
         run: echo "TAG=${TAG#v}" >> $GITHUB_ENV
       - run: echo ${TAG}
-      - name: Debug Outputs for Bug Proof
-        run: |
-          echo "WRONG (github property): ${{ github.event.inputs.RI }}"
-          echo "RIGHT (passed value): ${{ inputs.RI }}"
-
+      - name: Verify Fix
+        run: echo "SUCCESS - Using passed input RI is ${{ inputs.RI }}"
       - name: Check out the repo # checking our the code at current commit that triggers the workflow
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.inputs.branch-webserver-id }}
           fetch-depth: 1
 
       - name: Set up QEMU
@@ -95,16 +91,15 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-
       - name: Build and push RA database
         run: |
           cd scripts/RADI
           docker build --no-cache -f Dockerfile.database \
             --build-arg IMAGE_TAG=${TAG}\
-            --build-arg ROBOTICS_ACADEMY=${{ github.event.inputs.RA }}\
-            --build-arg ROBOTICS_INFRASTRUCTURE=${{ github.event.inputs.RI }} \
-            --build-arg ACADEMY_OWNER=${{ github.event.inputs.academy_owner }} \
-            --build-arg INFRA_OWNER=${{ github.event.inputs.infra_owner }} \
+            --build-arg ROBOTICS_ACADEMY=${{ inputs.RA }}\
+            --build-arg ROBOTICS_INFRASTRUCTURE=${{ inputs.RI }} \
+            --build-arg ACADEMY_OWNER=${{ inputs.academy_owner }} \
+            --build-arg INFRA_OWNER=${{ inputs.infra_owner }} \
             -t jderobot/robotics-database:${TAG} .
           docker push jderobot/robotics-database:${TAG}
       - name: Upload as Latest
