@@ -97,8 +97,6 @@ jobs:
       - name: Save the version tag
         run: echo "TAG=${TAG#v}" >> $GITHUB_ENV
       - run: echo ${TAG}
-      - name: Verify Fix
-        run: echo "SUCCESS - Using passed input RI is ${{ inputs.RI }}"
       - name: Check out the repo # checking our the code at current commit that triggers the workflow
         uses: actions/checkout@v3
         with:
